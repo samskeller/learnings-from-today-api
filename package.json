@@ -4,6 +4,7 @@
   "description": "API side of app to keep track of what I learned today",
   "main": "app.js",
   "scripts": {
+    "start:dev": "nodemon app.js",
     "test": "test"
   },
   "author": "Sam Keller",
@@ -14,5 +15,8 @@
     "lodash": "4.17.15",
     "morgan": "1.9.1",
     "node-uuid": "1.4.8"
+  },
+  "devDependencies": {
+    "nodemon": "1.19.1"
   }
 }

@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: node app.js
+    command: npm run start:dev
     env_file:
       - ./.env
     ports:
@@ -13,6 +13,8 @@ services:
       - "9230:9230" # chrome debugger
     links:
       - mysql
+    volumes:
+      - ./:/container:ro
   mysql:
     image: mysql:5.7
     env_file:
