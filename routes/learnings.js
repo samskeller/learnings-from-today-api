@@ -1,5 +1,7 @@
 const express = require('express')
 
+const Knex = require('../db/knex')
+
 const LearningsRouter = express.Router()
 
 LearningsRouter.post('/', (req, res, next) => {

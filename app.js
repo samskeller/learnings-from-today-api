@@ -1,7 +1,7 @@
 const express = require('express')
 const helmet = require('helmet')
 const morgan = require('morgan')
-const uuid = require('node-uuid')
+const uuid = require('uuid/v4')
 
 const learningsRoutes = require('./routes/learnings')
 
@@ -12,7 +12,7 @@ app.use(helmet())
 
 // Add a request ID to the log output
 morgan.token('request-id', req => {
-  return uuid.v1()
+  return uuid()
 })
 
 // Setup the logger

@@ -3,6 +3,8 @@ FROM alpine:3.10.1 as build
 RUN apk upgrade --update-cache
 RUN apk add nodejs nodejs-npm bash
 
+RUN npm install knex -g
+
 RUN mkdir /container
 
 WORKDIR /container/
