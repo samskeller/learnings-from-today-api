@@ -3,7 +3,7 @@ exports.up = function(knex) {
   return knex.schema
     .createTable('users', t => {
       t.uuid('id').primary()
-      t.string('username').notNullable()
+      t.string('username').notNullable().unique()
       t.string('password').notNullable()
       t.timestamp('created_at').defaultTo(knex.fn.now()).notNullable()
     })
