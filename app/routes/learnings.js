@@ -1,6 +1,6 @@
 const express = require('express')
 
-const Knex = require('../db/knex')
+const Knex = require('../knex')
 
 const LearningsRouter = express.Router()
 

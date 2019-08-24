@@ -1,7 +1,8 @@
+const bcrypt = require('bcrypt')
 const passport = require('passport')
 const passportStrategy = require('passport-local').Strategy
 
-const Knex = require('./db/knex')
+const Knex = require('./knex')
 
 // Initialize Passport for authentication
 //
@@ -11,14 +12,13 @@ const Knex = require('./db/knex')
 // will be set at `req.user` in route handlers after authentication.
 passport.use(new passportStrategy(
   async (username, password, cb) => {
-    let users;
+    let users
     try {
       users = await Knex
         .select('*')
         .from('users')
         .where({
-          username,
-          password
+          username
         })
     } catch (err) {
       return cb(err)
@@ -34,14 +34,15 @@ passport.use(new passportStrategy(
 
     const user = users[0]
 
-    // Will add bcrypt comparison later
-    if (user.password !== password) {
+    // Compare provided password with hashed password
+    const match = await bcrypt.compare(password, user.password)
+    if (!match) {
       return cb(null, false)
     }
 
     return cb(null, user)
   }
-));
+))
 
 // Configure Passport authenticated session persistence.
 //
@@ -51,8 +52,8 @@ passport.use(new passportStrategy(
 // serializing, and querying the user record by ID from the database when
 // deserializing.
 passport.serializeUser((user, cb) => {
-  cb(null, user.id);
-});
+  cb(null, user.id)
+})
 
 passport.deserializeUser(async (id, cb) => {
   let users
@@ -76,6 +77,6 @@ passport.deserializeUser(async (id, cb) => {
   }
 
   return cb(null, users[0])
-});
+})
 
 module.exports = passport
