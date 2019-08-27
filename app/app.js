@@ -1,4 +1,5 @@
 const bodyParser = require('body-parser')
+const { errors } = require('celebrate')
 const express = require('express')
 const expressSession = require('express-session')
 const expressMySQLStore = require('express-mysql-session')(expressSession)
@@ -70,5 +71,8 @@ app.use(authRoutes)
 
 // Register the learnings routes
 app.use('/learnings', ensureLoggedIn, learningsRoutes)
+
+// Register celebrate's error handling
+app.use(errors())
 
 app.listen(port, () => console.log(`Example app listening on port ${port}`))

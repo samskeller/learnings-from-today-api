@@ -1,9 +1,11 @@
 const bcrypt = require('bcrypt')
+const { celebrate } = require('celebrate')
 const express = require('express')
 const passport = require('passport')
 const uuid = require('uuid/v4')
 
 const Knex = require('../knex')
+const User = require('../models/user')
 
 const AuthRouter = express.Router()
 
@@ -12,7 +14,7 @@ AuthRouter.get('/login', (req, res, next) => {
 })
 
 // passport.authenticate() verifies that the login attempt works
-AuthRouter.post('/login', passport.authenticate('local'), (req, res, next) => {
+AuthRouter.post('/login', celebrate({ body: User }), passport.authenticate('local'), (req, res, next) => {
   res.send('Logged in!')
 })
 
@@ -21,7 +23,7 @@ AuthRouter.get('/logout', (req, res, next) => {
   res.redirect('/login')
 })
 
-AuthRouter.post('/signup', async (req, res, next) => {
+AuthRouter.post('/signup', celebrate({ body: User }), async (req, res, next) => {
   let users
   const id = uuid()
 
