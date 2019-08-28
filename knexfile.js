@@ -13,4 +13,16 @@ module.exports = {
       directory: 'db/migrations'
     }
   },
+  test: {
+    client: 'mysql',
+    connection: {
+      host: 'mysql',
+      user: 'root',
+      password: 'root',
+      database: 'app_test'
+    },
+    migrations: {
+      directory: 'db/migrations'
+    }
+  }
 };
