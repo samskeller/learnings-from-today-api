@@ -44,11 +44,16 @@ AuthRouter.post('/signup', celebrate({ body: User }), async (req, res, next) => 
   } catch (err) {
     if (err.code === 'ER_DUP_ENTRY') {
       console.log('Duplicate user entry already exists', err)
-      return res.send('Duplicate entry exists')
+      return res.status(422).send({
+        error: {
+          status: 422,
+          message: 'Duplicate entry exists'
+        }
+      })
     }
 
     console.log('Error inserting user', err)
-    return res.send('Error inserting user')
+    return res.status(500).send('Error inserting user')
   }
 
   // Log the new user in, creating a new session. (sigh, passport uses callbacks)
@@ -58,7 +63,7 @@ AuthRouter.post('/signup', celebrate({ body: User }), async (req, res, next) => 
         console.log('Couldn\'t log user in: ', err)
         reject(err)
       }
-      res.send('New user created')
+      res.status(201).send('New user created')
       resolve()
     })
   })
