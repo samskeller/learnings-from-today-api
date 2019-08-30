@@ -10,7 +10,7 @@ services:
       - ./.env
     ports:
       - "3000:3000"
-      - "9230:9230" # chrome debugger
+      - "9229:9229" # chrome debugger
     links:
       - mysql
     volumes:

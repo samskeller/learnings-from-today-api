@@ -8,6 +8,7 @@ const morgan = require('morgan')
 const uuid = require('uuid/v4')
 
 const authRoutes = require('./routes/auth')
+const knexfile = require('../knexfile')
 const learningsRoutes = require('./routes/learnings')
 const passport = require('./passport')
 
@@ -33,12 +34,9 @@ app.use(bodyParser.urlencoded({
 
 // Setup session management
 const sessionStore = new expressMySQLStore({
-  host: process.env.DB_HOSTNAME,
-  user: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
   clearExpired: false,
-  createDatabaseTable: true
+  createDatabaseTable: true,
+  ...knexfile[process.env.NODE_ENV]['connection']
 })
 
 const sessionConfig = {

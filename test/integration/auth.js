@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const assert = require('chai').assert
 const bcrypt = require('bcrypt')
 const Promise = require('bluebird')
@@ -38,10 +39,10 @@ describe('Auth integration tests', () => {
         })
         .expect(200)
 
-      const dbSessions = await knex('users').select('*')
+      const dbSessions = await knex('sessions').select('*')
 
       assert.strictEqual(dbSessions.length, 1)
-      assert.strictEqual(dbSessions[0].id, userToInsert.id)
+      assert.strictEqual(JSON.parse(dbSessions[0].data)['passport']['user'], userToInsert.id)
     })
 
     it('returns a 401 when there\'s no matching user', async () => {
@@ -143,6 +144,34 @@ describe('Auth integration tests', () => {
         .expect(422)
 
       assert.strictEqual(response.body.error.message, 'Duplicate entry exists')
+    })
+  })
+
+  describe('GET /logout', () => {
+    let cookies
+    beforeEach(async () => {
+      // log user in before each test
+      const response = await request(app)
+        .post('/signup')
+        .send({
+          username: 'test@test.com',
+          password: 'passwordtest'
+        })
+        .expect(201)
+
+      cookies = response.headers['set-cookie'].pop().split(';')[0];
+    })
+
+    it('logs the user out successfully', async () => {
+      const response = await request(app)
+        .get('/logout')
+        .set('Cookie', cookies)
+        .expect(200)
+
+      const sessions = await knex('sessions').select('*')
+      assert.strictEqual(sessions.length, 1)
+      assert.isTrue(_.isEmpty(JSON.parse(sessions[0]['data'])['passport']))
+      assert.strictEqual(response.text, 'Successfully logged out')
     })
   })
 })

@@ -5,7 +5,8 @@
   "main": "app/app.js",
   "scripts": {
     "start:dev": "nodemon app/app.js",
-    "test": "NODE_ENV=test mocha --recursive --exit test/"
+    "test": "NODE_ENV=test mocha --recursive --exit test/",
+    "test:debug": "NODE_ENV=test mocha --inspect-brk=0.0.0.0:9229 --exit --recursive test"
   },
   "author": "Sam Keller",
   "license": "ISC",

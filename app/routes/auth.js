@@ -20,7 +20,7 @@ AuthRouter.post('/login', celebrate({ body: User }), passport.authenticate('loca
 
 AuthRouter.get('/logout', (req, res, next) => {
   req.logout()
-  res.redirect('/login')
+  res.send('Successfully logged out')
 })
 
 AuthRouter.post('/signup', celebrate({ body: User }), async (req, res, next) => {
