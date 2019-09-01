@@ -12,21 +12,21 @@ const tables = [
   'sessions'
 ]
 describe('Learnings integration tests', () => {
+  let cookies
+  beforeEach(async () => {
+    // log user in before each test
+    const response = await request(app)
+      .post('/signup')
+      .send({
+        username: 'test@test.com',
+        password: 'passwordtest'
+      })
+      .expect(201)
+
+    cookies = response.headers['set-cookie'].pop().split(';')[0];
+  })
+
   describe('POST /learnings', () => {
-    let cookies
-    beforeEach(async () => {
-      // log user in before each test
-      const response = await request(app)
-        .post('/signup')
-        .send({
-          username: 'test@test.com',
-          password: 'passwordtest'
-        })
-        .expect(201)
-
-      cookies = response.headers['set-cookie'].pop().split(';')[0];
-    })
-
     it('creates a valid learning successfully', async () => {
       const response = await request(app)
         .post('/learnings')
@@ -104,5 +104,98 @@ describe('Learnings integration tests', () => {
 
       assert.strictEqual(response.body.error.message, 'Duplicate entry exists')
     })
+  })
+
+  describe('GET /learnings', () => {
+    it('returns all the learnings for a given user', async () => {
+      const promises = []
+      const learningDate = new Date()
+      for (i = 0; i < 5; i++) {
+        promises.push(request(app)
+          .post('/learnings')
+          .set('Cookie', cookies)
+          .send({
+            learning: 'something new',
+            date: learningDate.toDateString()
+          })
+        )
+        // doesn't take into account DST, but not necessary for a test
+        learningDate.setDate(learningDate.getDate() + 1)
+      }
+      await Promise.all(promises)
+
+      const response = await request(app)
+        .get('/learnings')
+        .set('Cookie', cookies)
+        .expect(200)
+
+      assert.strictEqual(response.body.length, 5)
+    })
+
+    it('uses the page query parameter to paginate and limits to 10 per response', async () => {
+      const promises = []
+      const learningDate = new Date()
+      for (i = 0; i < 12; i++) {
+        promises.push(request(app)
+          .post('/learnings')
+          .set('Cookie', cookies)
+          .send({
+            learning: 'something new',
+            date: learningDate.toDateString()
+          })
+        )
+        // doesn't take into account DST, but not necessary for a test
+        learningDate.setDate(learningDate.getDate() + 1)
+      }
+      await Promise.all(promises)
+
+      let response = await request(app)
+        .get('/learnings')
+        .set('Cookie', cookies)
+        .expect(200)
+
+      assert.strictEqual(response.body.length, 10)
+
+      response = await request(app)
+        .get('/learnings?page=2')
+        .set('Cookie', cookies)
+        .expect(200)
+
+      assert.strictEqual(response.body.length, 2)
+    })
+
+    it('orders the learnings from newest to olders', async () => {
+      const promises = []
+      const learningDate = new Date('2019-09-01 00:00:00')
+      for (i = 0; i < 4; i++) {
+        // doesn't take into account DST, but not necessary for a test
+        learningDate.setDate(learningDate.getDate() + 1)
+        promises.push(request(app)
+          .post('/learnings')
+          .set('Cookie', cookies)
+          .send({
+            learning: 'something new',
+            date: learningDate.toDateString()
+          })
+        )
+      }
+      await Promise.all(promises)
+
+      const response = await request(app)
+        .get('/learnings')
+        .set('Cookie', cookies)
+        .expect(200)
+
+      // the newest date
+      assert.equalDate(new Date(response.body[0].learning_date), learningDate)
+    })
+
+    it('returns a 401 if the user is not logged in', async () => {
+      // No cookie set
+      const response = await request(app)
+        .get('/learnings')
+        .expect(401)
+    })
+
   })
 })
