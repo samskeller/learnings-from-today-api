@@ -12,6 +12,8 @@ const knexfile = require('../knexfile')
 const learningsRoutes = require('./routes/learnings')
 const passport = require('./passport')
 
+require('dotenv').config()
+
 const app = express()
 const port = 3000
 
@@ -57,18 +59,11 @@ app.use(expressSession(sessionConfig))
 app.use(passport.initialize())
 app.use(passport.session())
 
-const ensureLoggedIn = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next()
-  }
-  res.status(401).send()
-}
-
 // Register the auth routes
 app.use(authRoutes)
 
 // Register the learnings routes
-app.use('/learnings', ensureLoggedIn, learningsRoutes)
+app.use('/learnings', learningsRoutes)
 
 // Register celebrate's error handling
 app.use(errors())

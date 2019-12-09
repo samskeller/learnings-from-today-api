@@ -4,7 +4,7 @@
   "description": "API side of app to keep track of what I learned today",
   "main": "app/app.js",
   "scripts": {
-    "start:dev": "nodemon app/app.js",
+    "start:dev": "NODE_ENV=development nodemon app/app.js",
     "test": "NODE_ENV=test mocha --recursive --exit test/",
     "test:debug": "NODE_ENV=test mocha --inspect-brk=0.0.0.0:9229 --exit --recursive test"
   },
@@ -15,6 +15,7 @@
     "bluebird": "3.5.5",
     "body-parser": "1.19.0",
     "celebrate": "10.0.1",
+    "dotenv": "8.2.0",
     "express": "4.17.1",
     "express-mysql-session": "2.1.0",
     "express-session": "1.16.2",
