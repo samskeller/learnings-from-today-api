@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser')
 const { errors } = require('celebrate')
+const cors = require('cors')
 const express = require('express')
 const expressSession = require('express-session')
 const expressMySQLStore = require('express-mysql-session')(expressSession)
@@ -18,6 +19,8 @@ const app = express()
 const port = 3000
 
 app.use(helmet())
+
+app.use(cors({credentials: true, origin: true}));
 
 // Add a request ID to the log output
 morgan.token('request-id', req => {
